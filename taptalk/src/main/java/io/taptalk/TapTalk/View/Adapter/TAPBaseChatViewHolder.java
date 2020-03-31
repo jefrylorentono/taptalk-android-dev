@@ -3,13 +3,14 @@ package io.taptalk.TapTalk.View.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.regex.Pattern;
 
@@ -20,7 +21,8 @@ import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Manager.TAPMessageStatusManager;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.Model.TAPUserModel;
-import io.taptalk.Taptalk.BuildConfig;
+import io.taptalk.TapTalk.BuildConfig;
+import io.taptalk.TapTalk.View.Activity.TAPBaseChatActivity;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.COPY_MESSAGE;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.Extras.MESSAGE;
@@ -61,13 +63,21 @@ public class TAPBaseChatViewHolder extends TAPBaseViewHolder<TAPMessageModel> {
         if (!myUserModel.getUserID().equals(item.getUser().getUserID()) &&
                 (null == item.getIsRead() || !item.getIsRead()) &&
                 (null != item.getSending() && !item.getSending()) &&
-                !TAPMessageStatusManager.getInstance().getReadMessageQueue().contains(item.getMessageID()) &&
-                !TAPMessageStatusManager.getInstance().getMessagesMarkedAsRead().contains(item.getMessageID())
+                !TAPMessageStatusManager.getInstance(
+                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        .getReadMessageQueue().contains(item.getMessageID()) &&
+                !TAPMessageStatusManager.getInstance(
+                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        .getMessagesMarkedAsRead().contains(item.getMessageID())
         ) {
             item.updateReadMessage();
             new Thread(() -> {
-                TAPMessageStatusManager.getInstance().addUnreadListByOne(item.getRoom().getRoomID());
-                TAPMessageStatusManager.getInstance().addReadMessageQueue(item.getMessageID());
+                TAPMessageStatusManager.getInstance(
+                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        .addUnreadListByOne(item.getRoom().getRoomID());
+                TAPMessageStatusManager.getInstance(
+                        ((TAPBaseChatActivity) itemView.getContext()).instanceKey)
+                        .addReadMessageQueue(item.getMessageID());
             }).start();
         }
     }

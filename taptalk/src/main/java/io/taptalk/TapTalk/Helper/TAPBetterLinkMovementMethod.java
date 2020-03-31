@@ -12,7 +12,6 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,7 +20,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 /**
  * https://github.com/saket/Better-Link-Movement-Method/blob/master/better-link-movement-method/src/main/java/me/saket/bettermovementmethod/BetterLinkMovementMethod.java
@@ -43,9 +42,9 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     public interface OnLinkClickListener {
         /**
-         * @param textView The TextView on which a click was registered.
-         * @param url      The clicked URL.
-         * @param originalText    The TextView original text that being highlighted
+         * @param textView     The TextView on which a click was registered.
+         * @param url          The clicked URL.
+         * @param originalText The TextView original text that being highlighted
          * @return True if this click was handled. False to let Android handle the URL.
          */
         boolean onClick(TextView textView, String url, String originalText);
@@ -53,9 +52,9 @@ public class TAPBetterLinkMovementMethod extends LinkMovementMethod {
 
     public interface OnLinkLongClickListener {
         /**
-         * @param textView The TextView on which a long-click was registered.
-         * @param url      The long-clicked URL.
-         * @param originalText    The TextView original text that being highlighted
+         * @param textView     The TextView on which a long-click was registered.
+         * @param url          The long-clicked URL.
+         * @param originalText The TextView original text that being highlighted
          * @return True if this long-click was handled. False to let Android handle the URL (as a short-click).
          */
         boolean onLongClick(TextView textView, String url, String originalText);

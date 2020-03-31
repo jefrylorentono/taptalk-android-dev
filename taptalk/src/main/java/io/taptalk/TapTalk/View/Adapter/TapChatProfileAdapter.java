@@ -11,14 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.widget.ImageViewCompat;
-import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -27,6 +19,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
@@ -45,7 +46,7 @@ import io.taptalk.TapTalk.Manager.TAPFileDownloadManager;
 import io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel;
 import io.taptalk.TapTalk.Model.TAPMessageModel;
 import io.taptalk.TapTalk.View.Activity.TAPChatProfileActivity;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.R;
 
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_NOTIFICATION;
 import static io.taptalk.TapTalk.Const.TAPDefaultConstant.ChatProfileMenuType.MENU_VIEW_MEMBERS;
@@ -63,11 +64,13 @@ import static io.taptalk.TapTalk.Model.ResponseModel.TapChatProfileItemModel.TYP
 
 public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemModel, TAPBaseViewHolder<TapChatProfileItemModel>> {
 
+    private String instanceKey = "";
     private TAPChatProfileActivity.ChatProfileInterface chatProfileInterface;
     private RequestManager glide;
     private int gridWidth;
 
-    public TapChatProfileAdapter(List<TapChatProfileItemModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
+    public TapChatProfileAdapter(String instanceKey, List<TapChatProfileItemModel> items, TAPChatProfileActivity.ChatProfileInterface chatProfileInterface, RequestManager glide) {
+        this.instanceKey = instanceKey;
         setItems(items, true);
         gridWidth = TAPUtils.getScreenWidth() / 3;
         this.chatProfileInterface = chatProfileInterface;
@@ -264,20 +267,20 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                 return;
             }
 
-            Integer downloadProgressValue = TAPFileDownloadManager.getInstance().getDownloadProgressPercent(message.getLocalID());
+            Integer downloadProgressValue = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressPercent(message.getLocalID());
             clContainer.getLayoutParams().width = gridWidth;
             ivThumbnail.setImageDrawable(null);
 
 //            if (null == thumbnail) {
-                thumbnail = new BitmapDrawable(
-                        itemView.getContext().getResources(),
-                        TAPFileUtils.getInstance().decodeBase64(
-                                (String) (null == message.getData().get(THUMBNAIL) ? "" :
-                                        message.getData().get(THUMBNAIL))));
-                if (thumbnail.getIntrinsicHeight() <= 0) {
-                    // Set placeholder image if thumbnail fails to load
-                    thumbnail = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_grey_e4);
-                }
+            thumbnail = new BitmapDrawable(
+                    itemView.getContext().getResources(),
+                    TAPFileUtils.getInstance().decodeBase64(
+                            (String) (null == message.getData().get(THUMBNAIL) ? "" :
+                                    message.getData().get(THUMBNAIL))));
+            if (thumbnail.getIntrinsicHeight() <= 0) {
+                // Set placeholder image if thumbnail fails to load
+                thumbnail = ContextCompat.getDrawable(itemView.getContext(), R.drawable.tap_bg_grey_e4);
+            }
 //            }
 
             // Load thumbnail when download is not in progress
@@ -301,7 +304,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
 
             String fileID = (String) message.getData().get(FILE_ID);
 
-            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID) || TAPFileDownloadManager.getInstance().checkPhysicalFileExists(message)) {
+            if (TAPCacheManager.getInstance(itemView.getContext()).containsCache(fileID) || TAPFileDownloadManager.getInstance(instanceKey).checkPhysicalFileExists(message)) {
                 // Image exists in cache / file exists in storage
                 if (message.getType() == TYPE_VIDEO && null != message.getData()) {
                     Number duration = (Number) message.getData().get(DURATION);
@@ -327,7 +330,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                             // Get full-size thumbnail from Uri
                             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                             String dataUri = (String) message.getData().get(FILE_URI);
-                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance().getFileMessageUri(message.getRoom().getRoomID(), fileID);
+                            Uri videoUri = null != dataUri ? Uri.parse(dataUri) : TAPFileDownloadManager.getInstance(instanceKey).getFileMessageUri(message.getRoom().getRoomID(), fileID);
                             try {
                                 retriever.setDataSource(itemView.getContext(), videoUri);
                                 mediaThumbnail = new BitmapDrawable(itemView.getContext().getResources(), retriever.getFrameAtTime());
@@ -342,25 +345,25 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                             activity.runOnUiThread(() -> {
                                 // Load media thumbnail
                                 glide.load(finalMediaThumbnail)
-                                .apply(new RequestOptions().placeholder(thumbnail))
-                                .listener(new RequestListener<Drawable>() {
-                                    @Override
-                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                        return false;
-                                    }
+                                        .apply(new RequestOptions().placeholder(thumbnail))
+                                        .listener(new RequestListener<Drawable>() {
+                                            @Override
+                                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                                return false;
+                                            }
 
-                                    @Override
-                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                        if (position == getAdapterPosition()) {
-                                            // Load image only if view has not been recycled
-                                            isMediaReady = true;
-                                            clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(message, ivThumbnail, isMediaReady));
-                                            return false;
-                                        } else {
-                                            return true;
-                                        }
-                                    }
-                                }).into(ivThumbnail);
+                                            @Override
+                                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                                if (position == getAdapterPosition()) {
+                                                    // Load image only if view has not been recycled
+                                                    isMediaReady = true;
+                                                    clContainer.setOnClickListener(v -> chatProfileInterface.onMediaClicked(message, ivThumbnail, isMediaReady));
+                                                    return false;
+                                                } else {
+                                                    return true;
+                                                }
+                                            }
+                                        }).into(ivThumbnail);
                             });
                         }
                     }
@@ -384,7 +387,7 @@ public class TapChatProfileAdapter extends TAPBaseAdapter<TapChatProfileItemMode
                     pbProgress.setMax(100);
                     pbProgress.setProgress(downloadProgressValue);
                     clContainer.setOnClickListener(v -> chatProfileInterface.onCancelDownloadClicked(message));
-                    //Long downloadProgressBytes = TAPFileDownloadManager.getInstance().getDownloadProgressBytes(item.getLocalID());
+                    //Long downloadProgressBytes = TAPFileDownloadManager.getInstance(instanceKey).getDownloadProgressBytes(item.getLocalID());
                     //if (null != downloadProgressBytes) {
                     //    tvMediaInfo.setText(TAPUtils.getFileDisplayProgress(item, downloadProgressBytes));
                     //}

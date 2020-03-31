@@ -1,12 +1,13 @@
-package io.taptalk.TapTalk.View.Adapter;
+package io.moselo.SampleApps.Adapter;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -18,8 +19,9 @@ import io.taptalk.TapTalk.Helper.TAPUtils;
 import io.taptalk.TapTalk.Helper.TapTalk;
 import io.taptalk.TapTalk.Helper.recyclerview_fastscroll.views.FastScrollRecyclerView;
 import io.taptalk.TapTalk.Model.TAPCountryRecycleItem;
-import io.taptalk.TapTalk.View.Activity.TAPCountryListActivity;
-import io.taptalk.Taptalk.R;
+import io.taptalk.TapTalk.View.Adapter.TAPBaseAdapter;
+import io.moselo.SampleApps.Activity.TAPCountryListActivity;
+import io.taptalk.TapTalkSample.R;
 
 import static io.taptalk.TapTalk.Model.TAPCountryRecycleItem.RecyclerItemType.COUNTRY_INITIAL;
 

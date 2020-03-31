@@ -10,6 +10,7 @@ public class TAPDefaultConstant {
 
     public static final class RoomDatabase {
         public static final int kDatabaseVersion = 7;
+        public static final String DATABASE_NAME = "message_database";
     }
 
     public static final class DatabaseType {
@@ -107,16 +108,16 @@ public class TAPDefaultConstant {
     }
 
     public static final class IntentType {
-    public static final String INTENT_TYPE_ALL = "*/*";
-    public static final String INTENT_TYPE_IMAGE = "image/*";
-    public static final String INTENT_TYPE_VIDEO = "video/*";
-    public static final String GALLERY = "Gallery";
-    public static final String SELECT_PICTURE = "Select Picture";
-    public static final String OPEN_FILE = "Open File";
-
+        public static final String INTENT_TYPE_ALL = "*/*";
+        public static final String INTENT_TYPE_IMAGE = "image/*";
+        public static final String INTENT_TYPE_VIDEO = "video/*";
+        public static final String GALLERY = "Gallery";
+        public static final String SELECT_PICTURE = "Select Picture";
+        public static final String OPEN_FILE = "Open File";
     }
 
     public static final class Extras {
+        public static final String INSTANCE_KEY = "kTAPExtraInstanceKey";
         public static final String MESSAGE = "kTAPExtraMessage";
         public static final String ROOM = "kTAPExtraRoom";
         public static final String ROOM_ID = "kTAPExtraRoomID";

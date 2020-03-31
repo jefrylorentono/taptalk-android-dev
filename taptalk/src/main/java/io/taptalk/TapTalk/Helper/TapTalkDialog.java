@@ -8,14 +8,15 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.UiThread;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import io.taptalk.Taptalk.R;
+import androidx.annotation.IdRes;
+import androidx.annotation.UiThread;
+
+import io.taptalk.TapTalk.R;
 
 public class TapTalkDialog extends Dialog {
 
